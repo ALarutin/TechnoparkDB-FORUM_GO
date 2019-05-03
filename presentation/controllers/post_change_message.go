@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"data_base/models"
+	"data_base/database"
 	"data_base/presentation/logger"
 	"encoding/json"
 	"fmt"
@@ -35,7 +35,7 @@ func ChangeMessageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var post models.Post
+	var post database.Post
 	err = json.Unmarshal(body, &post)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -43,7 +43,7 @@ func ChangeMessageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	post, err = models.GetInstance().UpdatePost(post.Message, id)
+	post, err = database.GetInstance().UpdatePost(post.Message, id)
 	if err != nil {
 		if err.Error() == errorPqNoDataFound {
 			myJSON := fmt.Sprintf(`{"%s%s%v"}`, messageCantFind, cantFindPost, id)

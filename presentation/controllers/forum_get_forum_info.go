@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"data_base/models"
+	"data_base/database"
 	"data_base/presentation/logger"
 	"encoding/json"
 	"fmt"
@@ -11,7 +11,7 @@ import (
 
 func GetForumInfoHandler(w http.ResponseWriter, r *http.Request) {
 
-	var forum models.Forum
+	var forum database.Forum
 
 	varMap := mux.Vars(r)
 	slug, found := varMap["slug"]
@@ -21,7 +21,7 @@ func GetForumInfoHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	forum, err := models.GetInstance().GetForum(slug)
+	forum, err := database.GetInstance().GetForum(slug)
 	if err != nil {
 		if err.Error() == errorPqNoDataFound {
 			myJSON := fmt.Sprintf(`{"%s%s%s"}`, messageCantFind, cantFindForum, slug)

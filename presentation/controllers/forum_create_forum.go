@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"data_base/models"
+	"data_base/database"
 	"data_base/presentation/logger"
 	"encoding/json"
 	"fmt"
@@ -25,7 +25,7 @@ func CreateForumHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var forum models.Forum
+	var forum database.Forum
 
 	err = json.Unmarshal(body, &forum)
 	if err != nil {
@@ -34,7 +34,7 @@ func CreateForumHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	f, err := models.GetInstance().CreateForum(forum)
+	f, err := database.GetInstance().CreateForum(forum)
 	if err != nil {
 		if err.Error() == errorPqNoDataFound {
 			myJSON := fmt.Sprintf(`{"%s%s%s"}`, messageCantFind, cantFindUser, forum.User)

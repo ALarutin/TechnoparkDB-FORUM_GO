@@ -1,14 +1,14 @@
 package controllers
 
 import (
-	"data_base/models"
+	"data_base/database"
 	"data_base/presentation/logger"
 	"net/http"
 )
 
 func ClearDataBaseHandler(w http.ResponseWriter, r *http.Request) {
 
-	err := models.GetInstance().ClearDatabase()
+	err := database.GetInstance().ClearDatabase()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		logger.Error.Println(err.Error())

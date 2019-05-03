@@ -1,8 +1,8 @@
-package models
+package database
 
 import "time"
 
-func (db *dbManager) CreateForum(forum Forum) (f Forum, err error) {
+func (db *databaseManager) CreateForum(forum Forum) (f Forum, err error) {
 
 	row := db.dataBase.QueryRow(`SELECT * FROM func_create_forum($1::citext, $2::citext, $3::text)`,
 		forum.User, forum.Slug, forum.Title)
@@ -10,7 +10,7 @@ func (db *dbManager) CreateForum(forum Forum) (f Forum, err error) {
 	return
 }
 
-func (db *dbManager) CreateThread(thread Thread) (t Thread, err error) {
+func (db *databaseManager) CreateThread(thread Thread) (t Thread, err error) {
 	row := db.dataBase.QueryRow(`SELECT * FROM  func_create_thread
  	 ($1::citext, $2::TIMESTAMP WITH TIME ZONE, $3::citext, $4::text, $5::citext, $6::text)`,
 		thread.Author, thread.Created, thread.Forum, thread.Message, thread.Slug, thread.Title)
@@ -18,13 +18,13 @@ func (db *dbManager) CreateThread(thread Thread) (t Thread, err error) {
 	return
 }
 
-func (db *dbManager) GetForum(slug string) (forum Forum, err error) {
+func (db *databaseManager) GetForum(slug string) (forum Forum, err error) {
 	row := db.dataBase.QueryRow(`SELECT * FROM func_get_forum($1::citext)`, slug)
 	err = row.Scan(&forum.IsNew, &forum.ID, &forum.Slug, &forum.User, &forum.Title, &forum.Posts, &forum.Threads)
 	return
 }
 
-func (db *dbManager) GetThreads(slug string, since time.Time, desc bool, limit int) (threads []Thread, err error) {
+func (db *databaseManager) GetThreads(slug string, since time.Time, desc bool, limit int) (threads []Thread, err error) {
 
 	rows, err := db.dataBase.Query(`SELECT * FROM func_get_threads($1::citext, $2::TIMESTAMP WITH TIME ZONE,
   		$3::BOOLEAN, $4::INT)`, slug, since, desc, limit)
@@ -45,7 +45,7 @@ func (db *dbManager) GetThreads(slug string, since time.Time, desc bool, limit i
 	return
 }
 
-func (db *dbManager) GetUsers(slug string, since string, desc bool, limit int) (users []User, err error) {
+func (db *databaseManager) GetUsers(slug string, since string, desc bool, limit int) (users []User, err error) {
 
 	rows, err := db.dataBase.Query(`SELECT * FROM func_get_users($1::citext, $2::citext, $3::BOOLEAN, $4::INT)`,
 		slug, since, desc, limit)

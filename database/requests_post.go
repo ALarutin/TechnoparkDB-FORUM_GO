@@ -1,4 +1,4 @@
-package models
+package database
 
 const (
 	user   = "user"
@@ -6,7 +6,7 @@ const (
 	thread = "thread"
 )
 
-func (db *dbManager) UpdatePost(message string, id int) (post Post, err error) {
+func (db *databaseManager) UpdatePost(message string, id int) (post Post, err error) {
 	row := db.dataBase.QueryRow(
 		`SELECT id, author, thread, forum, message, is_edited, parent, created 
 				FROM func_update_post($1::text, $2::INT)`,
@@ -16,7 +16,7 @@ func (db *dbManager) UpdatePost(message string, id int) (post Post, err error) {
 	return
 }
 
-func (db *dbManager) GetPostInfo(id int, related []string) (postInfo PostInfo, err error) {
+func (db *databaseManager) GetPostInfo(id int, related []string) (postInfo PostInfo, err error) {
 	row := db.dataBase.QueryRow(
 		`SELECT id, author, thread, forum, message, is_edited, parent, created 
 				FROM func_get_post($1::INT)`, id)

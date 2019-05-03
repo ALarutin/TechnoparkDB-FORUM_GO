@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"data_base/models"
+	"data_base/database"
 	"data_base/presentation/logger"
 	"encoding/json"
 	"fmt"
@@ -35,7 +35,7 @@ func VoteThreadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var vote models.Vote
+	var vote database.Vote
 
 	err = json.Unmarshal(body, &vote)
 	if err != nil {
@@ -44,7 +44,7 @@ func VoteThreadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	thread, err := models.GetInstance().CreateOrUpdateVote(vote, slug, id)
+	thread, err := database.GetInstance().CreateOrUpdateVote(vote, slug, id)
 	if err != nil {
 		if err.Error() == errorPqNoDataFound {
 			myJSON := fmt.Sprintf(`{"%s%s%s/%d"}`, messageCantFind, cantFindThread, slug, id)

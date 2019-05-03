@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"data_base/models"
+	"data_base/database"
 	"data_base/presentation/logger"
 	"encoding/json"
 	"fmt"
@@ -11,7 +11,7 @@ import (
 
 func GetUserInfoHandler(w http.ResponseWriter, r *http.Request) {
 
-	var user models.User
+	var user database.User
 
 	varMap := mux.Vars(r)
 	nickname, found := varMap["nickname"]
@@ -21,7 +21,7 @@ func GetUserInfoHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := models.GetInstance().GetUser(nickname)
+	user, err := database.GetInstance().GetUser(nickname)
 	if err != nil {
 		if err.Error() == errorPqNoDataFound {
 			myJSON := fmt.Sprintf(`{"%s%s%s"}`, messageCantFind, cantFindUser, nickname)

@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"data_base/models"
+	"data_base/database"
 	"data_base/presentation/logger"
 	"encoding/json"
 	"fmt"
@@ -27,7 +27,7 @@ func GetThreadInfoThreadHandler(w http.ResponseWriter, r *http.Request) {
 		slug = ""
 	}
 
-	thread, err := models.GetInstance().GetThread(slug, id)
+	thread, err := database.GetInstance().GetThread(slug, id)
 	if err != nil {
 		if err.Error() == errorPqNoDataFound {
 			myJSON := fmt.Sprintf(`{"%s%s%s/%d"}`, messageCantFind, cantFindThread, slug, id)

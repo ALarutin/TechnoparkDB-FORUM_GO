@@ -1,4 +1,4 @@
-package models
+package database
 
 import (
 	"data_base/presentation/logger"
@@ -16,11 +16,11 @@ const (
 	DBName     = "postgres"
 )
 
-type dbManager struct {
+type databaseManager struct {
 	dataBase *sql.DB
 }
 
-var db *dbManager
+var database *databaseManager
 
 func init() {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
@@ -38,7 +38,7 @@ func init() {
 		panic(err)
 	}
 
-	db = &dbManager{
+	database = &databaseManager{
 		dataBase: dataBase,
 	}
 	logger.Info.Printf("\nSuccessfully connected to database at: 5432")
@@ -47,12 +47,12 @@ func init() {
 }
 
 func closeConnection() {
-	err := db.dataBase.Close()
+	err := database.dataBase.Close()
 	if err != nil {
 		logger.Fatal.Println(err.Error())
 	}
 }
 
-func GetInstance() *dbManager {
-	return db
+func GetInstance() *databaseManager {
+	return database
 }

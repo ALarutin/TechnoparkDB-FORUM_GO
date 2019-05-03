@@ -1,11 +1,11 @@
-package models
+package database
 
 import (
 	"database/sql"
 	"time"
 )
 
-func (db *dbManager) CreatePost(post Post, created time.Time, id int, forum string) (p Post, err error) {
+func (db *databaseManager) CreatePost(post Post, created time.Time, id int, forum string) (p Post, err error) {
 	row := db.dataBase.QueryRow(`SELECT id, author, thread, forum, message, is_edited, parent, created 
 										FROM func_create_post($1::citext, $2::INT, $3::text, $4::INT, $5::citext, $6::TIMESTAMP WITH TIME ZONE)`,
 		post.Author, id, post.Message, post.Parent, forum, created)
@@ -14,14 +14,14 @@ func (db *dbManager) CreatePost(post Post, created time.Time, id int, forum stri
 	return
 }
 
-func (db *dbManager) GetThread(slug string, threadId int) (thread Thread, err error) {
+func (db *databaseManager) GetThread(slug string, threadId int) (thread Thread, err error) {
 	row := db.dataBase.QueryRow(`SELECT * FROM func_get_thread($1::citext, $2::INT)`, slug, threadId)
 	err = row.Scan(&thread.IsNew, &thread.ID, &thread.Slug, &thread.Author, &thread.Forum,
 		&thread.Title, &thread.Message, &thread.Votes, &thread.Created)
 	return
 }
 
-func (db *dbManager) UpdateThread(message string, title string, slug string, threadId int) (thread Thread, err error) {
+func (db *databaseManager) UpdateThread(message string, title string, slug string, threadId int) (thread Thread, err error) {
 	row := db.dataBase.QueryRow(`SELECT * FROM func_update_thread($1::text, $2::text, $3::citext, $4::INT)`,
 		message, title, slug, threadId)
 	err = row.Scan(&thread.IsNew, &thread.ID, &thread.Slug, &thread.Author, &thread.Forum, &thread.Title,
@@ -29,7 +29,7 @@ func (db *dbManager) UpdateThread(message string, title string, slug string, thr
 	return
 }
 
-func (db *dbManager) CreateOrUpdateVote(vote Vote, slug string, threadId int) (thread Thread, err error) {
+func (db *databaseManager) CreateOrUpdateVote(vote Vote, slug string, threadId int) (thread Thread, err error) {
 	row := db.dataBase.QueryRow(`SELECT * FROM func_create_or_update_vote($1::citext, $2::citext, $3::INT, $4::INT)`,
 		vote.Nickname, slug, threadId, vote.Voice)
 	err = row.Scan(&thread.IsNew, &thread.ID, &thread.Slug, &thread.Author, &thread.Forum, &thread.Title,
@@ -38,8 +38,8 @@ func (db *dbManager) CreateOrUpdateVote(vote Vote, slug string, threadId int) (t
 }
 
 
-func (db *dbManager) GetPosts(slug string, id int, limit int, since int, sort string, desc bool) (posts []Post, err error) {
-	rows, err := getRowsForGetPosts(slug, id, limit, since, sort, desc)
+func (db *databaseManager) GetPosts(slug string, id int, limit int, since int, sort string, desc bool) (posts []Post, err error) {
+	rows, err := db.getRowsForGetPosts(slug, id, limit, since, sort, desc)
 	if err != nil {
 		return
 	}
@@ -57,7 +57,7 @@ func (db *dbManager) GetPosts(slug string, id int, limit int, since int, sort st
 	return
 }
 
-func getRowsForGetPosts(slug string, id int, limit int, since int, sort string, desc bool) (rows *sql.Rows, err error){
+func(db *databaseManager) getRowsForGetPosts(slug string, id int, limit int, since int, sort string, desc bool) (rows *sql.Rows, err error){
 	switch sort {
 	case "flat":
 		rows, err = db.dataBase.Query(

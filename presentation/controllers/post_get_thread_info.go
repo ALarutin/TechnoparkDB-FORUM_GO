@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"data_base/models"
+	"data_base/database"
 	"data_base/presentation/logger"
 	"encoding/json"
 	"fmt"
@@ -30,7 +30,7 @@ func GetThreadInfoPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	related := strings.Split(r.URL.Query().Get("related"), ",")
 
-	postInfo, err := models.GetInstance().GetPostInfo(id, related)
+	postInfo, err := database.GetInstance().GetPostInfo(id, related)
 	if err != nil {
 		if err.Error() == errorPqNoDataFound {
 			myJSON := fmt.Sprintf(`{"%s%s%v"}`, messageCantFind, cantFindPost, id)

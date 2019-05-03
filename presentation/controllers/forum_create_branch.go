@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"data_base/models"
+	"data_base/database"
 	"data_base/presentation/logger"
 	"encoding/json"
 	"fmt"
@@ -29,7 +29,7 @@ func CreateBranchHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var thread models.Thread
+	var thread database.Thread
 
 	err = json.Unmarshal(body, &thread)
 	if err != nil {
@@ -50,7 +50,7 @@ func CreateBranchHandler(w http.ResponseWriter, r *http.Request) {
 
 	thread.Forum = slugUrl
 
-	t, err := models.GetInstance().CreateThread(thread)
+	t, err := database.GetInstance().CreateThread(thread)
 	if err != nil {
 		if err.Error() == errorPqNoDataFound {
 			myJSON := fmt.Sprintf(`{"%s%s%s or %s%s"}`,

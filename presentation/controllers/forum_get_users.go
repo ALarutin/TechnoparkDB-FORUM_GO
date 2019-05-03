@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"data_base/models"
+	"data_base/database"
 	"data_base/presentation/logger"
 	"encoding/json"
 	"fmt"
@@ -38,7 +38,7 @@ func GetUsersHandler(w http.ResponseWriter, r *http.Request) {
 		descBool = false
 	}
 
-	users, err := models.GetInstance().GetUsers(slug, since, descBool, limitInt)
+	users, err := database.GetInstance().GetUsers(slug, since, descBool, limitInt)
 	if err != nil {
 		if err.Error() == errorPqNoDataFound {
 			myJSON := fmt.Sprintf(`{"%s%s%s"}`, messageCantFind, cantFindForum, slug)

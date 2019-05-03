@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"data_base/models"
+	"data_base/database"
 	"data_base/presentation/logger"
 	"encoding/json"
 	"fmt"
@@ -59,7 +59,7 @@ func GetBranchMessagesHandler(w http.ResponseWriter, r *http.Request) {
 		descBool = false
 	}
 
-	posts, err := models.GetInstance().GetPosts(slug, id, limitInt, sinceInt, sort, descBool)
+	posts, err := database.GetInstance().GetPosts(slug, id, limitInt, sinceInt, sort, descBool)
 	if err != nil {
 		if err.Error() == errorPqNoDataFound {
 			myJSON := fmt.Sprintf(`{"%s%s%s/%d"}`, messageCantFind, cantFindThread, slug, id)

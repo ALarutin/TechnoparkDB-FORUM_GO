@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"data_base/models"
+	"data_base/database"
 	"data_base/presentation/logger"
 	"encoding/json"
 	"fmt"
@@ -26,7 +26,7 @@ func ChangeUserDataHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var user models.User
+	var user database.User
 	err = json.Unmarshal(body, &user)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -36,7 +36,7 @@ func ChangeUserDataHandler(w http.ResponseWriter, r *http.Request) {
 
 	user.Nickname = nickname
 
-	u, err := models.GetInstance().UpdateUser(user)
+	u, err := database.GetInstance().UpdateUser(user)
 	if err != nil {
 		if err.Error() == errorUniqueViolation {
 			myJSON := fmt.Sprintf(`{"message": "%s%s"}`, user.Email, emailUsed)

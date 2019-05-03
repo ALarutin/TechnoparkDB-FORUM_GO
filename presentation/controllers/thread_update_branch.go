@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"data_base/models"
+	"data_base/database"
 	"data_base/presentation/logger"
 	"encoding/json"
 	"fmt"
@@ -35,7 +35,7 @@ func UpdateBranchHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var thread models.Thread
+	var thread database.Thread
 	err = json.Unmarshal(body, &thread)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -43,7 +43,7 @@ func UpdateBranchHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	thread, err = models.GetInstance().UpdateThread(thread.Message, thread.Title, slug, id)
+	thread, err = database.GetInstance().UpdateThread(thread.Message, thread.Title, slug, id)
 	if err != nil {
 		if err.Error() == errorPqNoDataFound {
 			myJSON := fmt.Sprintf(`{"%s%s%s/%d"}`, messageCantFind, cantFindThread, slug, id)

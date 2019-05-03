@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"data_base/models"
+	"data_base/database"
 	"data_base/presentation/logger"
 	"encoding/json"
 	"net/http"
@@ -9,7 +9,7 @@ import (
 
 func GetDataBaseInfoHandler(w http.ResponseWriter, r *http.Request) {
 
-	database, err := models.GetInstance().GetDatabase()
+	database, err := database.GetInstance().GetDatabase()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		logger.Error.Println(err.Error())

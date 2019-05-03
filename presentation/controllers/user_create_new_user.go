@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"data_base/models"
+	"data_base/database"
 	"data_base/presentation/logger"
 	"encoding/json"
 	"github.com/gorilla/mux"
@@ -26,7 +26,7 @@ func CreatNewUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var user models.User
+	var user database.User
 
 	err = json.Unmarshal(body, &user)
 	if err != nil {
@@ -36,7 +36,7 @@ func CreatNewUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	user.Nickname = nickname
 
-	users, err := models.GetInstance().CreateUser(user)
+	users, err := database.GetInstance().CreateUser(user)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		logger.Error.Println(err.Error())

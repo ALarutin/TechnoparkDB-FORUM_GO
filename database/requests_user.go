@@ -1,6 +1,6 @@
-package models
+package database
 
-func (db *dbManager) GetUser(nickname string) (user User, err error) {
+func (db *databaseManager) GetUser(nickname string) (user User, err error) {
 
 	row := db.dataBase.QueryRow(
 		`SELECT * FROM func_get_user($1::citext)`,
@@ -9,7 +9,7 @@ func (db *dbManager) GetUser(nickname string) (user User, err error) {
 	return
 }
 
-func (db *dbManager) CreateUser(user User) (users []User, err error) {
+func (db *databaseManager) CreateUser(user User) (users []User, err error) {
 	rows, err := db.dataBase.Query(`SELECT * FROM func_create_user($1::citext, $2::citext, $3::text, $4::text)`,
 		user.Nickname, user.Email, user.Fullname, user.About)
 	if err != nil {
@@ -27,7 +27,7 @@ func (db *dbManager) CreateUser(user User) (users []User, err error) {
 	return
 }
 
-func (db *dbManager) UpdateUser(user User) (u User, err error) {
+func (db *databaseManager) UpdateUser(user User) (u User, err error) {
 	row := db.dataBase.QueryRow(
 		`SELECT * FROM func_update_user($1::citext, $2::citext, $3::text, $4::text)`,
 		user.Nickname, user.Email, user.Fullname, user.About)

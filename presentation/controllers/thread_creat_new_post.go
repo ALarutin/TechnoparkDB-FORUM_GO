@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"data_base/models"
+	"data_base/database"
 	"data_base/presentation/logger"
 	"encoding/json"
 	"fmt"
@@ -29,7 +29,7 @@ func CreatNewPostHandler(w http.ResponseWriter, r *http.Request) {
 		slug = ""
 	}
 
-	thread, err := models.GetInstance().GetThread(slug, id)
+	thread, err := database.GetInstance().GetThread(slug, id)
 	if err != nil {
 		if err.Error() == errorPqNoDataFound {
 			myJSON := fmt.Sprintf(`{"%s%s%s/%d"}`, messageCantFind, cantFindThread, slug, id)
@@ -54,7 +54,7 @@ func CreatNewPostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	inputPosts := make([]models.Post, 0)
+	inputPosts := make([]database.Post, 0)
 	err = json.Unmarshal(body, &inputPosts)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -64,9 +64,9 @@ func CreatNewPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	created := time.Now()
 
-	outPosts := make([]models.Post, 0)
+	outPosts := make([]database.Post, 0)
 	for _, post := range inputPosts {
-		post, err = models.GetInstance().CreatePost(post, created, thread.ID, thread.Forum)
+		post, err = database.GetInstance().CreatePost(post, created, thread.ID, thread.Forum)
 		if err != nil {
 			if err.Error() == errorPqNoDataFound {
 				myJSON := fmt.Sprintf(`{"%s%s%s"}`, messageCantFind, cantFindUser, post.Author)

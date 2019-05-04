@@ -11,7 +11,7 @@ import (
 const (
 	Host       = "localhost"
 	Port       = 5432
-	Subscriber = "postgres"
+	Subscriber = "mac"
 	Password   = "1209qawsed"
 	DBName     = "postgres"
 )

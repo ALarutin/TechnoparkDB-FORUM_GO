@@ -1,5 +1,3 @@
-CREATE SCHEMA public;
-
 CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA public;
 
 ------------------------------------------------------------------------------------------------------------------------

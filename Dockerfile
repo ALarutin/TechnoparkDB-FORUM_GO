@@ -28,9 +28,8 @@ EXPOSE $PORT
 USER postgres
 
 RUN /etc/init.d/postgresql start &&\
-	psql --echo-all --command "CREATE USER postgres WITH SUPERUSER PASSWORD '1209qawsed';" &&\
-	createdb -O maxim postgres &&\
-	psql -d forum -f database/dump.sql &&\
+	psql --echo-all --command "CREATE USER mac WITH SUPERUSER PASSWORD '1209qawsed';" &&\
+	psql -d postgres -f database/dump.sql &&\
 	/etc/init.d/postgresql stop
 
 RUN echo "host all  all    0.0.0.0/0  md5" >> /etc/postgresql/$PGSQLVER/main/pg_hba.conf &&\

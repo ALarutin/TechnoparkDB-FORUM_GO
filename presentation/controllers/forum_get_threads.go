@@ -45,8 +45,11 @@ func GetThreadsHandler(w http.ResponseWriter, r *http.Request) {
 	} else if desc == "false" {
 		descBool = false
 	}
+	//_ , err = database.GetInstance().GetForum(slug)
+	//logger.Error.Println(err)
 
 	threads, err := database.GetInstance().GetThreads(slug, since, descBool, limitInt)
+	logger.Error.Println(err)
 	if err != nil {
 		if err.Error() == errorPqNoDataFound {
 			myJSON := fmt.Sprintf(`{"%s%s%s"}`, messageCantFind, cantFindForum, slug)

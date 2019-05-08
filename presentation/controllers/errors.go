@@ -11,7 +11,10 @@ const (
 )
 
 const (
-	errorUniqueViolation     = `pq: unique_violation`
-	errorPqNoDataFound       = `pq: no_data_found`
-	errorForeignKeyViolation = `pq: foreign_key_violation`
+	//errorUniqueViolation = `pq: unique_violation`
+	errorUniqueViolation = `ERROR: unique_violation (SQLSTATE 23505)`
+	errorPqNoDataFound   = `ERROR: no_data_found (SQLSTATE P0002)` //TODO RENAME
+	//errorPqNoDataFound       = `pq: no_data_found` //TODO RENAME
+	//errorForeignKeyViolation = `pq: foreign_key_violation`
+	errorForeignKeyViolation = `ERROR: foreign_key_violation (SQLSTATE 23503)`
 )

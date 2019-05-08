@@ -13,6 +13,7 @@ require (
 	github.com/go-openapi/swag v0.19.0 // indirect
 	github.com/go-openapi/validate v0.19.0 // indirect
 	github.com/gorilla/mux v1.7.1
+	github.com/jackc/pgx v3.4.0+incompatible
 	github.com/labstack/gommon v0.2.8 // indirect
 	github.com/lib/pq v1.1.0
 	github.com/mailru/easyjson v0.0.0-20190403194419-1ea4449da983 // indirect
@@ -22,6 +23,7 @@ require (
 	github.com/mkideal/pkg v0.0.0-20170503154153-3e188c9e7ecc // indirect
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7 // indirect
 	github.com/philhofer/fwd v1.0.0 // indirect
+	github.com/pkg/errors v0.8.1 // indirect
 	github.com/tinylib/msgp v1.1.0 // indirect
 	github.com/xlab/closer v0.0.0-20190328110542-03326addb7c2
 	golang.org/x/net v0.0.0-20190501004415-9ce7a6920f09 // indirect

@@ -1,12 +1,34 @@
 package database
 
 func (db *databaseManager) ClearDatabase() (err error) {
-	_, err = db.dataBase.Exec(`SELECT * FROM func_clear_database()`)
+	tx, err := db.dataBase.Begin()
+	if err != nil {
+		return
+	}
+	defer tx.Rollback()
+
+	_, err = tx.Exec(`SELECT * FROM func_clear_database()`)
+	if err != nil {
+		return
+	}
+
+	err = tx.Commit()
 	return
 }
 
 func (db *databaseManager) GetDatabase() (database Database, err error) {
-	row := db.dataBase.QueryRow(`SELECT * FROM func_get_database()`)
+	tx, err := db.dataBase.Begin()
+	if err != nil {
+		return
+	}
+	defer tx.Rollback()
+
+	row := tx.QueryRow(`SELECT * FROM func_get_database()`)
 	err = row.Scan(&database.Forum, &database.Post, &database.Thread, &database.User)
+	if err != nil {
+		return
+	}
+
+	err = tx.Commit()
 	return
 }

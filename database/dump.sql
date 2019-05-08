@@ -544,12 +544,17 @@ AS
 $BODY$
 DECLARE
   result public.type_thread;
+  forum_slug citext;
   rec    RECORD;
 BEGIN
-  PERFORM func_get_forum(arg_slug);
+  SELECT slug INTO forum_slug FROM public.forum
+  WHERE slug = arg_slug;
+  IF NOT FOUND THEN
+    RAISE no_data_found;
+  END IF;
   FOR rec IN SELECT *
              FROM public.thread
-             WHERE forum = arg_slug
+             WHERE forum = forum_slug
                AND CASE
                      WHEN arg_since = '0001-01-01 00:00:00.000000 +00:00' THEN true
                      WHEN arg_desc THEN created <= arg_since

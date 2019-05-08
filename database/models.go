@@ -61,5 +61,5 @@ type PostInfo struct {
 type Vote struct {
 	ThreadSlug string
 	Nickname   string `json:"nickname"`
-	Voice      int `json:"voice"`
+	Voice      int    `json:"voice"`
 }

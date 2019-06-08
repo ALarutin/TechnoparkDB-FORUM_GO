@@ -30,7 +30,12 @@ func CreatNewPostHandler(w http.ResponseWriter, r *http.Request) {
 		slug = ""
 	}
 
-	thread, err := database.GetInstance().GetThread(slug, id)
+	var thread models.Thread
+	if slug == "" {
+		thread, err = database.GetInstance().GetThreadById(id)
+	} else {
+		thread, err = database.GetInstance().GetThreadBySlug(slug)
+	}
 	if err != nil {
 		if err.Error() == errorPqNoDataFound {
 			myJSON := fmt.Sprintf(`{"%s%s%s/%d"}`, messageCantFind, cantFindThread, slug, id)

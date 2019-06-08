@@ -26,14 +26,32 @@ func (db *databaseManager) CreatePost(post models.Post, created time.Time, id in
 	return
 }
 
-func (db *databaseManager) GetThread(slug string, threadId int) (thread models.Thread, err error) {
+func (db *databaseManager) GetThreadById(threadId int) (thread models.Thread, err error) {
 	tx, err := db.dataBase.Begin()
 	if err != nil {
 		return
 	}
 	defer tx.Rollback()
 
-	row := tx.QueryRow(`SELECT * FROM func_get_thread($1::citext, $2::INT)`, slug, threadId)
+	row := tx.QueryRow(`SELECT * FROM func_get_thread_by_id($1::INT)`,threadId)
+	err = row.Scan(&thread.IsNew, &thread.ID, &thread.Slug, &thread.Author, &thread.Forum,
+		&thread.Title, &thread.Message, &thread.Votes, &thread.Created)
+	if err != nil {
+		return
+	}
+
+	err = tx.Commit()
+	return
+}
+
+func (db *databaseManager) GetThreadBySlug(slug string) (thread models.Thread, err error) {
+	tx, err := db.dataBase.Begin()
+	if err != nil {
+		return
+	}
+	defer tx.Rollback()
+
+	row := tx.QueryRow(`SELECT * FROM func_get_thread_by_slug($1::citext)`, slug)
 	err = row.Scan(&thread.IsNew, &thread.ID, &thread.Slug, &thread.Author, &thread.Forum,
 		&thread.Title, &thread.Message, &thread.Votes, &thread.Created)
 	if err != nil {

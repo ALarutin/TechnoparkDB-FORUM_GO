@@ -43,11 +43,7 @@ func CreateBranchHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	var slugIsEmpty bool
-	if len(thread.Slug) == 0 {
-		slugIsEmpty = true
-		thread.Slug = strings.Replace(strings.ToLower(thread.Title), " ", "_", -1)
-	}
+	logger.Info.Print(thread.Slug)
 
 	thread.Forum = slugUrl
 
@@ -66,10 +62,6 @@ func CreateBranchHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		logger.Error.Println(err.Error())
 		return
-	}
-
-	if slugIsEmpty {
-		t.Slug = ""
 	}
 
 	data, err := json.Marshal(t)

@@ -7,7 +7,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA public;
 ------------------------------------------------------------------------------------------------------------------------
 
 -- table person
-CREATE TABLE person
+CREATE TABLE public.person
 (
   id       SERIAL NOT NULL,
   nickname citext NOT NULL,
@@ -23,7 +23,7 @@ ALTER TABLE public.person
   ADD CONSTRAINT person_pk PRIMARY KEY (nickname);
 
 -- table forum
-CREATE TABLE forum
+CREATE TABLE public.forum
 (
   id      SERIAL          NOT NULL,
   slug    citext          NOT NULL,
@@ -40,7 +40,7 @@ ALTER TABLE ONLY public.forum
   ADD CONSTRAINT "forum_user_fk" FOREIGN KEY (author) REFERENCES public.person (nickname);
 
 -- table forum_users
-CREATE TABLE forum_users
+CREATE TABLE public.forum_users
 (
   forum_slug    citext NOT NULL,
   user_nickname citext NOT NULL
@@ -53,10 +53,10 @@ ALTER TABLE ONLY public.forum_users
   ADD CONSTRAINT "forum_users_user_nickname_fk" FOREIGN KEY (user_nickname) REFERENCES public.person (nickname);
 
 -- table thread
-CREATE TABLE thread
+CREATE TABLE public.thread
 (
   id      SERIAL                   NOT NULL,
-  slug    citext                   NOT NULL,
+  slug    citext,
   author  citext                   NOT NULL,
   forum   citext                   NOT NULL,
   title   text DEFAULT ''          NOT NULL,
@@ -65,11 +65,11 @@ CREATE TABLE thread
   created TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
-CREATE UNIQUE INDEX thread_id_ui
-  ON public.thread (id);
+ALTER TABLE thread
+  ADD CONSTRAINT thread_pk PRIMARY KEY (id);
 
-ALTER TABLE public.thread
-  ADD CONSTRAINT thread_pk PRIMARY KEY (slug);
+CREATE UNIQUE INDEX thread_slug_ui
+  ON public.thread (slug);
 
 ALTER TABLE ONLY public.thread
   ADD CONSTRAINT "thread_author_fk" FOREIGN KEY (author) REFERENCES public.person (nickname);
@@ -78,7 +78,7 @@ ALTER TABLE ONLY public.thread
   ADD CONSTRAINT "thread_forum_fk" FOREIGN KEY (forum) REFERENCES public.forum (slug);
 
 -- table post
-CREATE TABLE post
+CREATE TABLE public.post
 (
   id        SERIAL                                             NOT NULL,
   author    citext                                             NOT NULL,
@@ -107,7 +107,7 @@ ALTER TABLE ONLY public.post
   ADD CONSTRAINT "post_parent_fk" FOREIGN KEY (parent) REFERENCES public.post (id);
 
 -- table vote
-CREATE TABLE vote
+CREATE TABLE public.vote
 (
   thread_slug   citext NOT NULL,
   user_nickname citext NOT NULL,
@@ -499,9 +499,14 @@ BEGIN
     RAISE no_data_found;
   END IF;
   INSERT INTO public.thread (slug, author, forum, title, message, created)
-  VALUES (arg_slug, arg_author, arg_slug_forum, arg_title, arg_message, arg_created) RETURNING *
-    INTO result.id, result.slug, result.author, result.forum, result.title, result.message, result.votes, result.created;
+  VALUES (CASE WHEN arg_slug != '' THEN arg_slug ELSE NULL END, arg_author, arg_slug_forum, arg_title, arg_message,
+          arg_created) RETURNING *
+           INTO result.id, result.slug, result.author, result.forum, result.title, result.message, result.votes, result.created;
   result.is_new := TRUE;
+  IF result.slug IS NULL
+  THEN
+    result.slug = '';
+  END IF;
   RETURN result;
 EXCEPTION
   WHEN unique_violation THEN
@@ -613,7 +618,7 @@ END;
 $BODY$
   LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION func_get_thread(arg_slug citext, arg_id INT)
+CREATE OR REPLACE FUNCTION func_get_thread_by_id(arg_id INT)
   RETURNS public.type_thread
 AS
 $BODY$
@@ -623,8 +628,27 @@ BEGIN
   SELECT * INTO result.id, result.slug, result.author, result.forum,
     result.title, result.message, result.votes, result.created
   FROM public.thread
-  WHERE slug = arg_slug
-     OR id = arg_id;
+  WHERE id = arg_id;
+  result.is_new := FALSE;
+  IF NOT FOUND THEN
+    RAISE no_data_found;
+  END IF;
+  RETURN result;
+END;
+$BODY$
+  LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION func_get_thread_by_slug(arg_slug citext)
+  RETURNS public.type_thread
+AS
+$BODY$
+DECLARE
+  result public.type_thread;
+BEGIN
+  SELECT * INTO result.id, result.slug, result.author, result.forum,
+    result.title, result.message, result.votes, result.created
+  FROM public.thread
+  WHERE slug = arg_slug;
   result.is_new := FALSE;
   IF NOT FOUND THEN
     RAISE no_data_found;

@@ -17,8 +17,6 @@ func ClearDataBaseHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
 		logger.Error.Println(err.Error())
-		return
 	}
 }

@@ -51,39 +51,9 @@ func loadConfiguration(file string) (pgxConfig pgx.ConnConfig) {
 	return
 }
 
-//func loadConfiguration(file string) (config dbConfig) {
-//	configFile, err := os.Open(file)
-//	if err != nil {
-//		logger.Fatal.Println(err.Error())
-//		return
-//	}
-//	jsonParser := json.NewDecoder(configFile)
-//	err = jsonParser.Decode(&config)
-//	if err != nil {
-//		logger.Fatal.Println(err.Error())
-//		return
-//	}
-//	err = configFile.Close()
-//	if err != nil {
-//		logger.Fatal.Println(err.Error())
-//		return
-//	}
-//
-//	//pgxConfig.Host = config.Host
-//	//pgxConfig.User = config.User
-//	//pgxConfig.Password = config.Password
-//	//pgxConfig.Database = config.DBName
-//	//pgxConfig.Port = config.Port
-//	return
-//}
-
 type databaseManager struct {
 	dataBase *pgx.ConnPool
 }
-
-//type databaseManager struct {
-//	dataBase *sql.DB
-//}
 
 var database *databaseManager
 
@@ -110,39 +80,6 @@ func closeConnection() {
 	database.dataBase.Close()
 	fmt.Println("DB connection closed")
 }
-
-//func init() {
-//
-//	config := loadConfiguration(pathConfig)
-//	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-//		config.Host, config.Port, config.User, config.Password, config.DBName)
-//
-//	dataBase, err := sql.Open("postgres", psqlInfo)
-//	if err != nil {
-//		logger.Fatal.Println(err.Error())
-//		panic(err)
-//	}
-//
-//	err = dataBase.Ping()
-//	if err != nil {
-//		logger.Fatal.Println(err.Error())
-//		panic(err)
-//	}
-//
-//	database = &databaseManager{
-//		dataBase: dataBase,
-//	}
-//	logger.Info.Printf("\nSuccessfully connected to database at: 5432")
-//
-//	closer.Bind(closeConnection)
-//}
-
-//func closeConnection() {
-//	err := database.dataBase.Close()
-//	if err != nil {
-//		logger.Fatal.Println(err.Error())
-//	}
-//}
 
 func GetInstance() *databaseManager {
 	return database

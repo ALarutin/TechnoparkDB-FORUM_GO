@@ -58,9 +58,7 @@ func CreateBranchHandler(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusNotFound)
 			_, err := w.Write([]byte(myJSON))
 			if err != nil {
-				w.WriteHeader(http.StatusInternalServerError)
 				logger.Error.Println(err.Error())
-				return
 			}
 			return
 		}
@@ -80,22 +78,13 @@ func CreateBranchHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if t.IsNew == false {
+	if !t.IsNew {
 		w.WriteHeader(http.StatusConflict)
-		_, err = w.Write(data)
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			logger.Error.Println(err.Error())
-			return
-		}
-		return
+	} else {
+		w.WriteHeader(http.StatusCreated)
 	}
-
-	w.WriteHeader(http.StatusCreated)
 	_, err = w.Write(data)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
 		logger.Error.Println(err.Error())
-		return
 	}
 }

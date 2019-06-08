@@ -113,7 +113,7 @@ func (db *databaseManager) GetPosts(slug string, id int, limit int, since int, s
 	return
 }
 
-func(db *databaseManager) getRowsForGetPosts(tx *pgx.Tx, id, limit, since int, slug, sort string, desc bool) (rows *pgx.Rows/*rows *sql.Rows*/, err error){
+func(db *databaseManager) getRowsForGetPosts(tx *pgx.Tx, id, limit, since int, slug, sort string, desc bool) (rows *pgx.Rows, err error){
 
 
 	switch sort {

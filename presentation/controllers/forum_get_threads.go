@@ -34,7 +34,7 @@ func GetThreadsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	since, err := time.Parse(time.RFC3339, r.URL.Query().Get("since"))
-	if err != nil{
+	if err != nil {
 		since = time.Time{}
 	}
 
@@ -45,8 +45,6 @@ func GetThreadsHandler(w http.ResponseWriter, r *http.Request) {
 	} else if desc == "false" {
 		descBool = false
 	}
-	//_ , err = database.GetInstance().GetForum(slug)
-	//logger.Error.Println(err)
 
 	threads, err := database.GetInstance().GetThreads(slug, since, descBool, limitInt)
 	logger.Error.Println(err)
@@ -56,9 +54,7 @@ func GetThreadsHandler(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusNotFound)
 			_, err := w.Write([]byte(myJSON))
 			if err != nil {
-				w.WriteHeader(http.StatusInternalServerError)
 				logger.Error.Println(err.Error())
-				return
 			}
 			return
 		}
@@ -71,11 +67,9 @@ func GetThreadsHandler(w http.ResponseWriter, r *http.Request) {
 	if len(threads) == 0 {
 		_, err = w.Write([]byte(`[]`))
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
 			logger.Error.Println(err.Error())
-			return
 		}
-	}else {
+	} else {
 		data, err := json.Marshal(threads)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -84,9 +78,7 @@ func GetThreadsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		_, err = w.Write(data)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
 			logger.Error.Println(err.Error())
-			return
 		}
 	}
 }

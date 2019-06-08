@@ -543,11 +543,12 @@ CREATE OR REPLACE FUNCTION func_get_threads(arg_slug citext, arg_since TIMESTAMP
 AS
 $BODY$
 DECLARE
-  result public.type_thread;
+  result     public.type_thread;
   forum_slug citext;
-  rec    RECORD;
+  rec        RECORD;
 BEGIN
-  SELECT slug INTO forum_slug FROM public.forum
+  SELECT slug INTO forum_slug
+  FROM public.forum
   WHERE slug = arg_slug;
   IF NOT FOUND THEN
     RAISE no_data_found;

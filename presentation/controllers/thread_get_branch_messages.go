@@ -66,9 +66,7 @@ func GetBranchMessagesHandler(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusNotFound)
 			_, err = w.Write([]byte(myJSON))
 			if err != nil {
-				w.WriteHeader(http.StatusInternalServerError)
 				logger.Error.Println(err.Error())
-				return
 			}
 			return
 		}
@@ -81,9 +79,7 @@ func GetBranchMessagesHandler(w http.ResponseWriter, r *http.Request) {
 	if len(posts) == 0 {
 		_, err = w.Write([]byte(`[]`))
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
 			logger.Error.Println(err.Error())
-			return
 		}
 	} else {
 		data, err := json.Marshal(posts)
@@ -94,9 +90,7 @@ func GetBranchMessagesHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		_, err = w.Write(data)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
 			logger.Error.Println(err.Error())
-			return
 		}
 	}
 }

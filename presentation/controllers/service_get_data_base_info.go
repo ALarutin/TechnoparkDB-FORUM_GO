@@ -7,30 +7,30 @@ import (
 	"net/http"
 )
 
-func GetDataBaseInfoHandler(w http.ResponseWriter, r *http.Request) {
+func GetDataBaseInfoHandler(w http.ResponseWriter, _ *http.Request) {
 
-	database, err := database.GetInstance().GetDatabase()
+	db, err := database.GetInstance().GetDatabase()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		logger.Error.Println(err.Error())
 		return
 	}
-	database.Post = database.Post - 1
-	database.User = database.User - 1
-	database.Forum = database.Forum - 1
-	database.Thread = database.Thread - 1
 
-	data, err := json.Marshal(database)
+	db.Post--
+	db.User--
+	db.Forum--
+	db.Thread--
+
+	data, err := json.Marshal(db)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		logger.Error.Println(err.Error())
 		return
 	}
+
 	w.WriteHeader(http.StatusOK)
 	_, err = w.Write(data)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
 		logger.Error.Println(err.Error())
-		return
 	}
 }

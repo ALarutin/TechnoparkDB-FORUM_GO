@@ -37,9 +37,7 @@ func GetThreadInfoPostHandler(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusNotFound)
 			_, err := w.Write([]byte(myJSON))
 			if err != nil {
-				w.WriteHeader(http.StatusInternalServerError)
 				logger.Error.Println(err.Error())
-				return
 			}
 			return
 		}
@@ -57,8 +55,6 @@ func GetThreadInfoPostHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	_, err = w.Write(data)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
 		logger.Error.Println(err.Error())
-		return
 	}
 }

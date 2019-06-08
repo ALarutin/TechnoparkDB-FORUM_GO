@@ -2,10 +2,11 @@ package controllers
 
 import (
 	"data_base/database"
+	"data_base/models"
 	"data_base/presentation/logger"
-	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
+	json "github.com/mailru/easyjson"
 	"io/ioutil"
 	"net/http"
 )
@@ -26,7 +27,7 @@ func ChangeUserDataHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var user database.User
+	var user models.User
 	err = json.Unmarshal(body, &user)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

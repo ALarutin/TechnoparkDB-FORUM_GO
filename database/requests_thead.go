@@ -1,11 +1,12 @@
 package database
 
 import (
+	"data_base/models"
 	"github.com/jackc/pgx"
 	"time"
 )
 
-func (db *databaseManager) CreatePost(post Post, created time.Time, id int, forum string) (p Post, err error) {
+func (db *databaseManager) CreatePost(post models.Post, created time.Time, id int, forum string) (p models.Post, err error) {
 	tx, err := db.dataBase.Begin()
 	if err != nil {
 		return
@@ -25,7 +26,7 @@ func (db *databaseManager) CreatePost(post Post, created time.Time, id int, foru
 	return
 }
 
-func (db *databaseManager) GetThread(slug string, threadId int) (thread Thread, err error) {
+func (db *databaseManager) GetThread(slug string, threadId int) (thread models.Thread, err error) {
 	tx, err := db.dataBase.Begin()
 	if err != nil {
 		return
@@ -43,7 +44,7 @@ func (db *databaseManager) GetThread(slug string, threadId int) (thread Thread, 
 	return
 }
 
-func (db *databaseManager) UpdateThread(message string, title string, slug string, threadId int) (thread Thread, err error) {
+func (db *databaseManager) UpdateThread(message string, title string, slug string, threadId int) (thread models.Thread, err error) {
 	tx, err := db.dataBase.Begin()
 	if err != nil {
 		return
@@ -62,7 +63,7 @@ func (db *databaseManager) UpdateThread(message string, title string, slug strin
 	return
 }
 
-func (db *databaseManager) CreateOrUpdateVote(vote Vote, slug string, threadId int) (thread Thread, err error) {
+func (db *databaseManager) CreateOrUpdateVote(vote models.Vote, slug string, threadId int) (thread models.Thread, err error) {
 	tx, err := db.dataBase.Begin()
 	if err != nil {
 		return
@@ -82,7 +83,7 @@ func (db *databaseManager) CreateOrUpdateVote(vote Vote, slug string, threadId i
 }
 
 
-func (db *databaseManager) GetPosts(slug string, id int, limit int, since int, sort string, desc bool) (posts []Post, err error) {
+func (db *databaseManager) GetPosts(slug string, id int, limit int, since int, sort string, desc bool) (posts []models.Post, err error) {
 	tx, err := db.dataBase.Begin()
 	if err != nil {
 		return
@@ -96,7 +97,7 @@ func (db *databaseManager) GetPosts(slug string, id int, limit int, since int, s
 	defer rows.Close()
 
 	for rows.Next() {
-		var post Post
+		var post models.Post
 		err = rows.Scan(&post.ID, &post.Author, &post.Thread, &post.Forum,
 			&post.Message, &post.IsEdited, &post.Parent, &post.Created)
 		if err != nil {

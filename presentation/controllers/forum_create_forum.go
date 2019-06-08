@@ -2,9 +2,10 @@ package controllers
 
 import (
 	"data_base/database"
+	"data_base/models"
 	"data_base/presentation/logger"
-	"encoding/json"
 	"fmt"
+	json "github.com/mailru/easyjson"
 	"io/ioutil"
 	"net/http"
 )
@@ -25,7 +26,7 @@ func CreateForumHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var forum database.Forum
+	var forum models.Forum
 
 	err = json.Unmarshal(body, &forum)
 	if err != nil {

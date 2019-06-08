@@ -1,6 +1,8 @@
 package database
 
-func (db *databaseManager) GetUser(nickname string) (user User, err error) {
+import "data_base/models"
+
+func (db *databaseManager) GetUser(nickname string) (user models.User, err error) {
 	tx, err := db.dataBase.Begin()
 	if err != nil {
 		return
@@ -19,7 +21,7 @@ func (db *databaseManager) GetUser(nickname string) (user User, err error) {
 	return
 }
 
-func (db *databaseManager) CreateUser(user User) (users []User, err error) {
+func (db *databaseManager) CreateUser(user models.User) (users []models.User, err error) {
 	tx, err := db.dataBase.Begin()
 	if err != nil {
 		return
@@ -49,7 +51,7 @@ func (db *databaseManager) CreateUser(user User) (users []User, err error) {
 	return
 }
 
-func (db *databaseManager) UpdateUser(user User) (u User, err error) {
+func (db *databaseManager) UpdateUser(user models.User) (u models.User, err error) {
 	tx, err := db.dataBase.Begin()
 	if err != nil {
 		return

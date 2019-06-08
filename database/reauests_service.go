@@ -1,5 +1,7 @@
 package database
 
+import "data_base/models"
+
 func (db *databaseManager) ClearDatabase() (err error) {
 	tx, err := db.dataBase.Begin()
 	if err != nil {
@@ -16,7 +18,7 @@ func (db *databaseManager) ClearDatabase() (err error) {
 	return
 }
 
-func (db *databaseManager) GetDatabase() (database Database, err error) {
+func (db *databaseManager) GetDatabase() (database models.Database, err error) {
 	tx, err := db.dataBase.Begin()
 	if err != nil {
 		return

@@ -3,9 +3,9 @@ package controllers
 import (
 	"data_base/database"
 	"data_base/presentation/logger"
-	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
+	json "github.com/mailru/easyjson"
 	"net/http"
 	"strconv"
 	"strings"

@@ -1,4 +1,4 @@
-package database
+package models
 
 import "time"
 
@@ -63,3 +63,4 @@ type Vote struct {
 	Nickname   string `json:"nickname"`
 	Voice      int    `json:"voice"`
 }
+

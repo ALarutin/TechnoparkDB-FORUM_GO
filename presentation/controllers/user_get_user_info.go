@@ -2,16 +2,17 @@ package controllers
 
 import (
 	"data_base/database"
+	"data_base/models"
 	"data_base/presentation/logger"
-	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
+	json "github.com/mailru/easyjson"
 	"net/http"
 )
 
 func GetUserInfoHandler(w http.ResponseWriter, r *http.Request) {
 
-	var user database.User
+	var user models.User
 
 	varMap := mux.Vars(r)
 	nickname, found := varMap["nickname"]

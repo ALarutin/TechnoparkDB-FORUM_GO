@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"data_base/database"
+	"data_base/models"
 	"data_base/presentation/logger"
 	"encoding/json"
 	"github.com/gorilla/mux"
@@ -26,7 +27,7 @@ func CreatNewUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var user database.User
+	var user models.User
 
 	err = json.Unmarshal(body, &user)
 	if err != nil {

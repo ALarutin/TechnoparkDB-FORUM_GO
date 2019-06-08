@@ -2,10 +2,11 @@ package controllers
 
 import (
 	"data_base/database"
+	"data_base/models"
 	"data_base/presentation/logger"
-	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
+	json "github.com/mailru/easyjson"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -35,7 +36,7 @@ func ChangeMessageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var post database.Post
+	var post models.Post
 	err = json.Unmarshal(body, &post)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

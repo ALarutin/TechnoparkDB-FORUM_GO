@@ -3,7 +3,7 @@ package controllers
 import (
 	"data_base/database"
 	"data_base/presentation/logger"
-	"encoding/json"
+	json "github.com/mailru/easyjson"
 	"net/http"
 )
 

@@ -118,7 +118,7 @@ ALTER TABLE public.vote
     ADD CONSTRAINT vote_pk PRIMARY KEY (thread_id, user_nickname);
 
 ALTER TABLE ONLY public.vote
-    ADD CONSTRAINT "vote_thread_slug_fk" FOREIGN KEY (thread_slug) REFERENCES public.thread (slug);
+    ADD CONSTRAINT "vote_thread_slug_fk" FOREIGN KEY (thread_id) REFERENCES public.thread (id);
 
 ALTER TABLE ONLY public.vote
     ADD CONSTRAINT "vote_user_nickname_fk" FOREIGN KEY (user_nickname) REFERENCES public.person (nickname);
@@ -1077,8 +1077,6 @@ SELECT *
 FROM func_add_admin();
 
 CREATE INDEX post_rating_d_idx ON public.post USING btree (post_path DESC);
-
-CREATE INDEX post_rating_idx ON public.post USING btree (post_path);
 
 CREATE INDEX post_rating_idx ON public.post USING btree (post_path);
 

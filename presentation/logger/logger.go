@@ -14,42 +14,34 @@ var (
 	Fatal   *log.Logger
 )
 
-var (
-	file = "logger.log"
-)
-
 func init() {
-	_file, err := os.Create(file)
-	if err != nil {
-		return
-	}
 
-	Info = log.New(_file,
+	Info = log.New(os.Stdout,
 		"INFO: ",
 		log.Ldate|log.Ltime|log.Lshortfile,
 	)
 
-	Error = log.New(_file,
+	Error = log.New(os.Stdout,
 		"ERROR: ",
 		log.Ldate|log.Ltime|log.Lshortfile,
 	)
 
-	Trace = log.New(_file,
+	Trace = log.New(os.Stdout,
 		"TRACE: ",
 		log.Ldate|log.Ltime|log.Lshortfile,
 	)
 
-	Debug = log.New(_file,
+	Debug = log.New(os.Stdout,
 		"DEBUG: ",
 		log.Ldate|log.Ltime|log.Lshortfile,
 	)
 
-	Warning = log.New(_file,
+	Warning = log.New(os.Stdout,
 		"WARNING: ",
 		log.Ldate|log.Ltime|log.Lshortfile,
 	)
 
-	Fatal = log.New(_file,
+	Fatal = log.New(os.Stdout,
 		"FATAL: ",
 		log.Ldate|log.Ltime|log.Lshortfile,
 	)

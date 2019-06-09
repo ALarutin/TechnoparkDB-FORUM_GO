@@ -60,7 +60,7 @@ func (db *databaseManager) GetPostInfo(id int, related []string) (postInfo model
 			postInfo.Person = &user
 		case thread:
 			var thread models.Thread
-			row := tx.QueryRow(`SELECT * FROM func_get_thread($1::citext, $2::INT)`, "", postInfo.Post.Thread)
+			row := tx.QueryRow(`SELECT * FROM func_get_thread_by_id($1::INT)`, postInfo.Post.Thread)
 			err = row.Scan(&thread.IsNew, &thread.ID, &thread.Slug, &thread.Author, &thread.Forum,
 				&thread.Title, &thread.Message, &thread.Votes, &thread.Created)
 			if err != nil {

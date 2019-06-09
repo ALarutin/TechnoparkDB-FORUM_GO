@@ -52,6 +52,7 @@ func GetThreadInfoPostHandler(w http.ResponseWriter, r *http.Request) {
 		logger.Error.Println(err.Error())
 		return
 	}
+
 	w.WriteHeader(http.StatusOK)
 	_, err = w.Write(data)
 	if err != nil {

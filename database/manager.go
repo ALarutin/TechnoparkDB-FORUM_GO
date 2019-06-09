@@ -11,8 +11,8 @@ import (
 )
 
 const (
-	maxConnections = 3
-	acquireTimeout = 3 * time.Second
+	maxConnections = 100
+	acquireTimeout = 5 * time.Second
 	pathConfig     = "/Users/mac/Desktop/TechnoparkDB-FORUM_GO/config.json"
 )
 

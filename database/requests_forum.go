@@ -2,7 +2,6 @@ package database
 
 import (
 	"data_base/models"
-	"data_base/presentation/logger"
 	"time"
 )
 
@@ -69,7 +68,6 @@ func (db *databaseManager) GetThreads(slug string, since time.Time, desc bool, l
 
 	rows, err := tx.Query(`SELECT * FROM func_get_threads($1::citext, $2::TIMESTAMP WITH TIME ZONE,
   		$3::BOOLEAN, $4::INT)`, slug, since, desc, limit)
-	logger.Error.Println(err)
 	if err != nil {
 		return
 	}
@@ -82,7 +80,6 @@ func (db *databaseManager) GetThreads(slug string, since time.Time, desc bool, l
 		if err != nil {
 			return
 		}
-		logger.Info.Println(thread)
 		threads = append(threads, thread)
 	}
 	if rows.Err() != nil {

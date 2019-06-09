@@ -109,13 +109,13 @@ ALTER TABLE ONLY public.post
 -- table vote
 CREATE TABLE public.vote
 (
-    thread_slug   citext NOT NULL,
+    thread_id     INT    NOT NULL,
     user_nickname citext NOT NULL,
     voice         INT    NOT NULL
 );
 
 ALTER TABLE public.vote
-    ADD CONSTRAINT vote_pk PRIMARY KEY (thread_slug, user_nickname);
+    ADD CONSTRAINT vote_pk PRIMARY KEY (thread_id, user_nickname);
 
 ALTER TABLE ONLY public.vote
     ADD CONSTRAINT "vote_thread_slug_fk" FOREIGN KEY (thread_slug) REFERENCES public.thread (slug);
@@ -230,7 +230,7 @@ $BODY$
 BEGIN
     UPDATE public."thread"
     SET votes = votes + New."voice"
-    WHERE "slug" = NEW."thread_slug";
+    WHERE "id" = NEW."thread_id";
     RETURN NULL;
 END;
 $BODY$
@@ -249,7 +249,7 @@ BEGIN
     IF (OLD.voice != NEW.voice) THEN
         UPDATE public."thread"
         SET votes = votes + 2 * New.voice
-        WHERE "slug" = NEW.thread_slug;
+        WHERE "id" = NEW.thread_id;
     END IF;
     RETURN NULL;
 END;
@@ -568,7 +568,7 @@ BEGIN
                FROM public.thread
                WHERE forum = forum_slug
                  AND CASE
-                         WHEN arg_since = '0001-01-01 00:00:00.000000 +00:00' THEN true
+                         WHEN arg_since = '0001-01-01 00:00:00.000000 +00:00' THEN TRUE
                          WHEN arg_desc THEN created <= arg_since
                          ELSE created >= arg_since END
                ORDER BY (CASE WHEN arg_desc THEN created END) DESC,
@@ -584,6 +584,10 @@ BEGIN
             result.message := rec.message;
             result.votes := rec.votes;
             result.created := rec.created;
+            IF result.slug IS NULL
+            THEN
+                result.slug = '';
+            END IF;
             RETURN next result;
         END LOOP;
 END;
@@ -639,6 +643,10 @@ BEGIN
     result.is_new := FALSE;
     IF NOT FOUND THEN
         RAISE no_data_found;
+    END IF;
+    IF result.slug IS NULL
+    THEN
+        result.slug = '';
     END IF;
     RETURN result;
 END;
@@ -718,6 +726,10 @@ BEGIN
     IF NOT FOUND THEN
         RAISE no_data_found;
     END IF;
+    IF result.slug IS NULL
+    THEN
+        result.slug = '';
+    END IF;
     RETURN result;
 END;
 $BODY$
@@ -731,27 +743,35 @@ $BODY$
 DECLARE
     result public.type_thread;
 BEGIN
-    SELECT slug
-    INTO result.slug
+    SELECT id
+    INTO result.id
     FROM public.thread
     WHERE slug = arg_slug
        OR id = arg_id;
     IF NOT FOUND THEN
         RAISE no_data_found;
     END IF;
-    INSERT INTO public.vote (thread_slug, user_nickname, voice)
-    VALUES (result.slug, arg_user, arg_vote)
-    ON CONFLICT ON CONSTRAINT vote_pk DO UPDATE
+
+    INSERT INTO public.vote (thread_id, user_nickname, voice)
+    VALUES (result.id, arg_user, arg_vote)
+
+    ON CONFLICT ON CONSTRAINT vote_pk
+        DO UPDATE
         SET voice = arg_vote
-    WHERE vote.thread_slug = result.slug
+    WHERE vote.thread_id = result.id
       AND vote.user_nickname = arg_user;
+
     SELECT *
     INTO result.id, result.slug, result.author, result.forum,
         result.title, result.message, result.votes, result.created
     FROM public.thread
-    WHERE slug = result.slug;
+    WHERE id = result.id;
     IF NOT FOUND THEN
         RAISE no_data_found;
+    END IF;
+    IF result.slug IS NULL
+    THEN
+        result.slug = '';
     END IF;
     result.is_new := FALSE;
     RETURN result;
@@ -853,6 +873,49 @@ END;
 $BODY$
     LANGUAGE plpgsql;
 
+-- CREATE OR REPLACE FUNCTION func_get_posts_flat(arg_slug citext, arg_id INT, arg_limit INT, arg_since INT,
+--                                                arg_desc BOOLEAN)
+--     RETURNS SETOF public.type_post
+-- AS
+-- $BODY$
+-- DECLARE
+--     result        public.type_post;
+--     arg_thread_id INT;
+--     rec           RECORD;
+-- BEGIN
+--     SELECT id
+--     INTO arg_thread_id
+--     FROM public.thread
+--     WHERE slug = arg_slug
+--        OR id = arg_id;
+--     IF NOT FOUND THEN
+--         RAISE no_data_found;
+--     END IF;
+--     FOR rec IN SELECT *
+--                FROM public.post
+--                WHERE thread = arg_thread_id
+--                  AND CASE
+--                          WHEN arg_since = '0' THEN TRUE
+--                          WHEN arg_desc THEN id < arg_since
+--                          ELSE id > arg_since END
+--                ORDER BY (CASE WHEN arg_desc THEN id END) DESC,
+--                         (CASE WHEN NOT arg_desc THEN id END) ASC
+--                LIMIT arg_limit
+--         LOOP
+--             result.id := rec.id;
+--             result.author := rec.author;
+--             result.thread := rec.thread;
+--             result.forum := rec.forum;
+--             result.message := rec.message;
+--             result.is_edited := rec.is_edited;
+--             result.parent := rec.parent;
+--             result.created := rec.created;
+--             RETURN next result;
+--         END LOOP;
+-- END;
+-- $BODY$
+--     LANGUAGE plpgsql;
+
 CREATE OR REPLACE FUNCTION func_get_posts_flat(arg_slug citext, arg_id INT, arg_limit INT, arg_since INT,
                                                arg_desc BOOLEAN)
     RETURNS SETOF public.type_post
@@ -872,14 +935,19 @@ BEGIN
         RAISE no_data_found;
     END IF;
     FOR rec IN SELECT *
-               FROM public.post
-               WHERE thread = arg_thread_id
+               FROM public.post AS ps
+                        JOIN public.person AS pr ON pr.nickname = ps.author
+                        JOIN public.forum AS f ON f.slug = ps.forum
+               WHERE ps.thread = arg_thread_id
                  AND CASE
-                         WHEN arg_since = '0' THEN TRUE
-                         WHEN arg_desc THEN id < arg_since
-                         ELSE id > arg_since END
-               ORDER BY (CASE WHEN arg_desc THEN id END) DESC,
-                        (CASE WHEN NOT arg_desc THEN id END) ASC
+                         WHEN arg_since = 0 THEN TRUE
+                         ELSE CASE
+                                  WHEN arg_desc THEN ps.id < arg_since
+                                  ELSE ps.id > arg_since
+                             END
+                   END
+               ORDER BY (CASE WHEN arg_desc THEN ps.id END) DESC,
+                        (CASE WHEN NOT arg_desc THEN ps.id END) ASC
                LIMIT arg_limit
         LOOP
             result.id := rec.id;
@@ -1006,4 +1074,34 @@ $BODY$
 ------------------------------------------------------------------------------------------------------------------------
 
 SELECT *
-FROM func_add_admin()
+FROM func_add_admin();
+
+CREATE INDEX post_rating_d_idx ON public.post USING btree (post_path DESC);
+
+CREATE INDEX post_rating_idx ON public.post USING btree (post_path);
+
+CREATE INDEX post_rating_idx ON public.post USING btree (post_path);
+
+CREATE INDEX post_author_idx ON public.post USING btree (author);
+
+CREATE INDEX post_thread_idx ON public.post USING btree (thread);
+
+CREATE INDEX post_created_d_idx ON public.post USING btree (created DESC);
+
+CREATE INDEX post_created_idx ON public.post USING btree (created);
+
+CREATE INDEX thread_forum_idx ON public.thread USING btree (forum);
+
+CREATE INDEX thread_author_idx ON public.thread USING btree (author);
+
+CREATE INDEX forum_author_idx ON public.forum USING btree (author);
+
+CREATE INDEX forum_id_idx ON public.forum USING btree (id);
+
+CREATE INDEX forum_users_user_nickname_idx ON public.forum_users USING btree (user_nickname);
+
+CREATE INDEX forum_users_user_nickname_idx ON public.forum_users USING btree (user_nickname);
+
+CREATE INDEX person_id_idx ON public.forum USING btree (id);
+
+

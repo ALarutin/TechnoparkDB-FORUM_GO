@@ -1100,7 +1100,7 @@ CREATE INDEX forum_id_idx ON public.forum USING btree (id);
 
 CREATE INDEX forum_users_user_nickname_idx ON public.forum_users USING btree (user_nickname);
 
-CREATE INDEX forum_users_user_nickname_idx ON public.forum_users USING btree (user_nickname);
+CREATE INDEX forum_users_forum_slug_idx ON public.forum_users USING btree (forum_slug);
 
 CREATE INDEX person_id_idx ON public.forum USING btree (id);
 
